@@ -34,29 +34,32 @@ onMounted(async () => {
 
     <div class="dash__stats">
       <div class="dash__stat">
+        <i class="dash__stat-icon fa-solid fa-receipt"></i>
         <span class="dash__stat-label">Pedidos totales</span>
         <strong>{{ stats?.totalOrders ?? '—' }}</strong>
       </div>
       <div class="dash__stat dash__stat--warn">
+        <i class="dash__stat-icon fa-solid fa-clock"></i>
         <span class="dash__stat-label">Pendientes</span>
         <strong>{{ stats?.pendingOrders ?? '—' }}</strong>
       </div>
       <div class="dash__stat dash__stat--accent">
+        <i class="dash__stat-icon fa-solid fa-sack-dollar"></i>
         <span class="dash__stat-label">Ingresos</span>
         <strong>{{ stats ? formatPrice(stats.revenue) : '—' }}</strong>
       </div>
     </div>
 
     <div class="dash__quick">
-      <RouterLink to="/admin/productos/nuevo" class="dash__quick-btn">+ Nuevo producto</RouterLink>
-      <RouterLink to="/admin/pedidos" class="dash__quick-btn">Ver pedidos</RouterLink>
-      <RouterLink to="/admin/usuarios" class="dash__quick-btn">Gestionar usuarios</RouterLink>
+      <RouterLink to="/admin/productos/nuevo" class="dash__quick-btn"><i class="fa-solid fa-plus"></i> Nuevo producto</RouterLink>
+      <RouterLink to="/admin/pedidos" class="dash__quick-btn"><i class="fa-solid fa-receipt"></i> Ver pedidos</RouterLink>
+      <RouterLink to="/admin/usuarios" class="dash__quick-btn"><i class="fa-solid fa-users"></i> Gestionar usuarios</RouterLink>
     </div>
 
     <section class="dash__recent">
       <div class="dash__recent-head">
         <h2>Pedidos recientes</h2>
-        <RouterLink to="/admin/pedidos" class="dash__link">Ver todos →</RouterLink>
+        <RouterLink to="/admin/pedidos" class="dash__link">Ver todos <i class="fa-solid fa-arrow-right"></i></RouterLink>
       </div>
 
       <div v-if="loading" class="dash__muted">Cargando…</div>
@@ -84,17 +87,26 @@ onMounted(async () => {
 
   &__stats { display: flex; flex-wrap: wrap; gap: 1.1rem; }
   &__stat {
+    position: relative;
     flex: 1 1 180px;
     @include card;
     padding: 1.4rem 1.6rem;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
+    overflow: hidden;
     strong { font-family: $font-accent; font-size: 2rem; color: $navy; }
     &--warn strong { color: $warning; }
-    &--accent { background: $grad-navy; strong { color: $accent; } .dash__stat-label { color: $text-on-navy; } }
+    &--accent { background: $grad-navy; strong { color: $accent; } .dash__stat-label { color: $text-on-navy; } .dash__stat-icon { color: rgba(255,255,255,0.16); } }
   }
   &__stat-label { font-size: 0.85rem; color: $text-secondary; }
+  &__stat-icon {
+    position: absolute;
+    top: 1rem;
+    right: 1.1rem;
+    font-size: 1.5rem;
+    color: rgba(33, 188, 251, 0.22);
+  }
 
   &__quick { display: flex; flex-wrap: wrap; gap: 0.7rem; }
   &__quick-btn {
