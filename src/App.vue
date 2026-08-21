@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import StoreLayout from '@/layout/StoreLayout.vue'
 import AdminLayout from '@/layout/AdminLayout.vue'
 import Toaster from '@/components/Toaster.vue'
+import { initSmoothScroll, destroySmoothScroll } from '@/composables/useSmoothScroll'
 
 const route = useRoute()
 const layout = computed(() => (route.meta.admin ? AdminLayout : StoreLayout))
+
+onMounted(() => initSmoothScroll())
+onUnmounted(() => destroySmoothScroll())
 </script>
 
 <template>
