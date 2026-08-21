@@ -107,7 +107,7 @@ async function save() {
   <div class="pf">
     <header class="pf__head">
       <h1>{{ isEdit ? 'Editar producto' : 'Nuevo producto' }}</h1>
-      <button class="btn btn--ghost btn--sm" @click="router.push('/admin/productos')">← Volver</button>
+      <button class="btn btn--ghost btn--sm" @click="router.push('/admin/productos')"><i class="fa-solid fa-arrow-left"></i> Volver</button>
     </header>
 
     <form class="pf__grid" @submit.prevent="save">
@@ -137,12 +137,12 @@ async function save() {
         <section class="pf__card">
           <div class="pf__card-head">
             <h3>Especificaciones</h3>
-            <button type="button" class="btn btn--ghost btn--sm" @click="addSpec">+ Añadir</button>
+            <button type="button" class="btn btn--ghost btn--sm" @click="addSpec"><i class="fa-solid fa-plus"></i> Añadir</button>
           </div>
           <div v-for="(s, i) in form.specs" :key="i" class="pf__spec">
             <input v-model="s.label" placeholder="Etiqueta" />
             <input v-model="s.value" placeholder="Valor" />
-            <button type="button" class="pf__spec-del" @click="removeSpec(i)">✕</button>
+            <button type="button" class="pf__spec-del" @click="removeSpec(i)" aria-label="Quitar"><i class="fa-solid fa-xmark"></i></button>
           </div>
         </section>
       </div>
