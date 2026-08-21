@@ -1,0 +1,51 @@
+// ─── PowerHouse Biotech — Agua Kangen — brand color system ───────────────────
+// Navy + cyan (PHB brand) with a gold accent taken from the marketing pieces.
+
+// Brand core
+$navy:        #010D27; // deep brand navy (headers, footer, hero)
+$navy-800:    #0A1533;
+$navy-700:    #14224A;
+$cyan:        #21BCFB; // primary CTA cyan
+$cyan-strong: #2094D2;
+$accent:      #18E7F0; // light cyan accent
+$gold:        #C9A96A; // premium gold accent (from revista)
+$gold-soft:   #E4CE9E;
+
+// Aliases used across components
+$primary:       $cyan;
+$primary-dark:  $navy;
+$secondary:     $gold;
+
+// Surfaces (light storefront)
+$white:      #FFFFFF;
+$surface:    #F6F9FC; // page background
+$surface-2:  #EEF3F9; // subtle panels
+$surface-3:  #E3ECF5;
+
+// Text
+$text:           #071023; // near-navy body/heading
+$text-secondary: #5A6576; // muted
+$text-light:     #FFFFFF; // on-dark
+$text-on-navy:   rgba(255, 255, 255, 0.82);
+
+// Borders & shadows
+$border:        rgba(7, 16, 35, 0.08);
+$border-strong: rgba(7, 16, 35, 0.14);
+$shadow-xs: 0 1px 3px rgba(7, 16, 35, 0.06);
+$shadow-sm: 0 4px 16px rgba(7, 16, 35, 0.08);
+$shadow-md: 0 12px 36px rgba(7, 16, 35, 0.12);
+$shadow-lg: 0 24px 60px rgba(7, 16, 35, 0.18);
+
+// Signature water gradient (hero, buttons, placeholders)
+$grad-water: linear-gradient(135deg, #2094D2 0%, #21BCFB 45%, #18E7F0 100%);
+$grad-navy:  linear-gradient(160deg, #010D27 0%, #0A1533 60%, #14224A 100%);
+$mesh-navy:  radial-gradient(at 15% 20%, rgba(33, 188, 251, 0.18) 0%, transparent 55%),
+             radial-gradient(at 85% 15%, rgba(24, 231, 240, 0.14) 0%, transparent 55%),
+             radial-gradient(at 80% 85%, rgba(32, 148, 210, 0.16) 0%, transparent 60%),
+             #010D27;
+
+// Status
+$success: #10B981;
+$warning: #F59E0B;
+$info:    #3B82F6;
+$error:   #EF4444;
