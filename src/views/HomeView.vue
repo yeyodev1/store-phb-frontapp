@@ -1,27 +1,40 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { catalogService } from '@/services/catalog.service'
 import type { Product, Category } from '@/types'
 import { site, waterTypes, trustBadges } from '@/config/site'
-import { useScrollProgress } from '@/composables/useScrollProgress'
 import ProductCard from '@/components/ProductCard.vue'
 
 const featured = ref<Product[]>([])
 const categories = ref<Category[]>([])
 const loading = ref(true)
 
-const heroRef = ref<HTMLElement | null>(null)
-const { progress } = useScrollProgress(heroRef)
+// Hero parallax — progress 0 at the very top (full opacity), 1 after one screen.
+const heroP = ref(0)
+let raf = 0
+function onHeroScroll() {
+  cancelAnimationFrame(raf)
+  raf = requestAnimationFrame(() => {
+    heroP.value = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.85)))
+  })
+}
 
-// Scroll-driven hero: content drifts up & fades, video slowly scales.
+// Content drifts up & fades, video slowly zooms, overlay deepens.
 const heroStyle = computed(() => ({
-  '--p': String(progress.value),
-  '--content-y': `${progress.value * -80}px`,
-  '--content-o': String(Math.max(0, 1 - progress.value * 1.6)),
-  '--video-scale': String(1 + progress.value * 0.18),
-  '--overlay-o': String(0.72 + progress.value * 0.25),
+  '--content-y': `${heroP.value * -110}px`,
+  '--content-o': String(Math.max(0, 1 - heroP.value * 1.15)),
+  '--video-scale': String(1 + heroP.value * 0.22),
+  '--overlay-o': String(0.68 + heroP.value * 0.28),
 }))
+
+onMounted(() => {
+  window.addEventListener('scroll', onHeroScroll, { passive: true })
+})
+onUnmounted(() => {
+  cancelAnimationFrame(raf)
+  window.removeEventListener('scroll', onHeroScroll)
+})
 
 onMounted(async () => {
   try {
@@ -42,7 +55,7 @@ onMounted(async () => {
 <template>
   <div class="home">
     <!-- ── Cinematic video hero ─────────────────────────────────────────── -->
-    <section ref="heroRef" class="hero" :style="heroStyle">
+    <section class="hero" :style="heroStyle">
       <div class="hero__media">
         <video
           class="hero__video"
@@ -50,7 +63,8 @@ onMounted(async () => {
           muted
           loop
           playsinline
-          poster="/img/products/bg-water-1.jpg"
+          preload="auto"
+          poster="/img/hero-poster.jpg"
         >
           <source src="/video/hero.mp4" type="video/mp4" />
         </video>
@@ -136,7 +150,7 @@ onMounted(async () => {
     <!-- ── Parallax video band (scroll-combined) ────────────────────────── -->
     <section class="band">
       <div class="band__media">
-        <video class="band__video" autoplay muted loop playsinline poster="/img/products/bg-water-2.jpg">
+        <video class="band__video" autoplay muted loop playsinline poster="/img/hero-poster.jpg">
           <source src="/video/hero.mp4" type="video/mp4" />
         </video>
         <div class="band__overlay"></div>
@@ -200,6 +214,7 @@ onMounted(async () => {
     position: absolute;
     inset: 0;
     z-index: 0;
+    background: $navy; // dark base so the hero is never white before the video paints
   }
 
   &__video {
@@ -374,7 +389,7 @@ onMounted(async () => {
   color: $white;
   margin-block: 1rem;
 
-  &__media { position: absolute; inset: 0; z-index: 0; }
+  &__media { position: absolute; inset: 0; z-index: 0; background: $navy; }
   &__video { width: 100%; height: 100%; object-fit: cover; }
   &__overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(1,13,39,0.92) 0%, rgba(1,13,39,0.55) 55%, rgba(1,13,39,0.3) 100%); }
 
