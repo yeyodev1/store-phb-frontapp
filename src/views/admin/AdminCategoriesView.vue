@@ -81,8 +81,8 @@ onMounted(load)
             <p>{{ c.description }}</p>
           </div>
           <div class="ac__actions">
-            <button class="btn btn--ghost btn--sm" @click="edit(c)">Editar</button>
-            <button class="ac__del" @click="remove(c)">🗑</button>
+            <button class="btn btn--ghost btn--sm" @click="edit(c)"><i class="fa-solid fa-pen"></i> Editar</button>
+            <button class="ac__del" @click="remove(c)" aria-label="Eliminar"><i class="fa-solid fa-trash"></i></button>
           </div>
         </article>
       </section>
