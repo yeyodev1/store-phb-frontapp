@@ -12,7 +12,7 @@ const route = useRoute()
 const mobileOpen = ref(false)
 const scrolled = ref(false)
 
-// Transparent (light text) while sitting over the home hero; solidifies on scroll.
+// Fully transparent while sitting over the home hero; navy glass once scrolled.
 const overHero = computed(() => route.name === 'Home' && !scrolled.value && !mobileOpen.value)
 
 function onScroll() {
@@ -40,11 +40,8 @@ function closeMobile() {
   <header class="header" :class="{ 'header--over': overHero }">
     <div class="header__bar">
       <RouterLink to="/" class="header__logo" @click="closeMobile">
-        <span class="header__logo-mark">PB</span>
-        <span class="header__logo-text">
-          <strong>PowerHouse</strong>
-          <small>Agua Kangen</small>
-        </span>
+        <img src="/img/logo-white.png" alt="PowerHouse Biotech" class="header__logo-img" />
+        <span class="header__logo-sub">Agua Kangen</span>
       </RouterLink>
 
       <nav class="header__nav">
@@ -115,21 +112,15 @@ function closeMobile() {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(255, 255, 255, 0.86);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid $border;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  background: rgba(1, 13, 39, 0.82);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background 0.35s ease, border-color 0.35s ease;
 
-  // Transparent variant over the hero video (light text).
   &--over {
     background: transparent;
     border-color: transparent;
     backdrop-filter: none;
-
-    .header__logo-text strong { color: #fff; }
-    .header__link { color: rgba(255, 255, 255, 0.9); &:hover { background: rgba(255,255,255,0.12); color: #fff; } }
-    .header__icon-btn { color: #fff; &:hover { background: rgba(255,255,255,0.12); } }
-    .header__burger span, .header__burger span::before, .header__burger span::after { background: #fff; }
   }
 
   &__bar {
@@ -138,37 +129,31 @@ function closeMobile() {
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    height: 72px;
+    height: 74px;
   }
 
   &__logo {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.7rem;
   }
 
-  &__logo-mark {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    background: $grad-navy;
+  &__logo-img {
+    height: 34px;
+    width: auto;
+    display: block;
+  }
+
+  &__logo-sub {
+    font-family: $font-accent;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: $accent;
-    font-family: $font-principal;
-    font-weight: 800;
-    font-size: 1.05rem;
-    letter-spacing: -0.03em;
-    box-shadow: $shadow-sm;
-  }
+    padding-left: 0.7rem;
+    border-left: 1px solid rgba(255, 255, 255, 0.25);
 
-  &__logo-text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.05;
-    strong { font-family: $font-principal; font-size: 1.02rem; color: $navy; }
-    small { font-family: $font-accent; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: $cyan-strong; }
+    @include until-md { display: none; }
   }
 
   &__nav {
@@ -176,28 +161,22 @@ function closeMobile() {
     align-items: center;
     gap: 0.4rem;
 
-    @include lg {
-      display: flex;
-    }
+    @include lg { display: flex; }
   }
 
   &__link {
     font-family: $font-secondary;
     font-weight: 500;
     font-size: 0.95rem;
-    color: $text;
+    color: rgba(255, 255, 255, 0.82);
     padding: 0.5rem 0.85rem;
     border-radius: 999px;
     transition: background 0.15s ease, color 0.15s ease;
-    &:hover { background: $surface-2; color: $cyan-strong; }
-    &--active { color: $cyan-strong; }
+    &:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+    &--active { color: $accent; }
   }
 
-  &__actions {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
+  &__actions { display: flex; align-items: center; gap: 0.4rem; }
 
   &__icon-btn {
     position: relative;
@@ -207,9 +186,9 @@ function closeMobile() {
     width: 44px;
     height: 44px;
     border-radius: 12px;
-    color: $navy;
+    color: #fff;
     transition: background 0.15s ease;
-    &:hover { background: $surface-2; }
+    &:hover { background: rgba(255, 255, 255, 0.12); }
     svg { width: 22px; height: 22px; }
   }
 
@@ -238,7 +217,7 @@ function closeMobile() {
       display: block;
       width: 20px;
       height: 2px;
-      background: $navy;
+      background: #fff;
       border-radius: 2px;
       transition: transform 0.2s ease, opacity 0.2s ease;
     }
@@ -256,7 +235,6 @@ function closeMobile() {
     flex-direction: column;
     gap: 0.35rem;
     padding-bottom: 1.2rem;
-
     @include lg { display: none; }
   }
 
@@ -264,8 +242,8 @@ function closeMobile() {
     font-family: $font-secondary;
     font-weight: 500;
     padding: 0.85rem 0.5rem;
-    border-bottom: 1px solid $border;
-    color: $text;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
   }
 }
 
