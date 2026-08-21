@@ -21,7 +21,11 @@ onUnmounted(() => destroySmoothScroll())
 
 <template>
   <component :is="layout">
-    <RouterView />
+    <RouterView v-slot="{ Component, route: r }">
+      <transition :name="r.meta.admin ? 'admin-view' : 'no-anim'" mode="out-in">
+        <component :is="Component" :key="r.path" />
+      </transition>
+    </RouterView>
   </component>
   <Toaster />
   <PageCurtain />
