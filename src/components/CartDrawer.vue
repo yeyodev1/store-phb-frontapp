@@ -27,7 +27,7 @@ function goCart() {
       <aside v-if="cart.isOpen" class="drawer" role="dialog" aria-label="Carrito de compras">
         <header class="drawer__head">
           <h3>Tu carrito <span v-if="cart.count">({{ cart.count }})</span></h3>
-          <button class="drawer__close" @click="cart.close()" aria-label="Cerrar">✕</button>
+          <button class="drawer__close" @click="cart.close()" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
         </header>
 
         <div v-if="cart.isEmpty" class="drawer__empty">
