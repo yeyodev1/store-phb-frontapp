@@ -9,11 +9,11 @@ const user = useUserStore()
 const open = ref(false)
 
 const nav = [
-  { to: '/admin', label: 'Dashboard', exact: true, icon: 'M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-5H4zM14 8h6V4h-6z' },
-  { to: '/admin/productos', label: 'Productos', icon: 'M4 7l8-4 8 4-8 4zM4 7v10l8 4 8-4V7' },
-  { to: '/admin/categorias', label: 'Categorías', icon: 'M4 6h16M4 12h16M4 18h10' },
-  { to: '/admin/pedidos', label: 'Pedidos', icon: 'M6 4h12l2 5H4zM4 9h16v11H4z' },
-  { to: '/admin/usuarios', label: 'Usuarios', icon: 'M9 11a3 3 0 100-6 3 3 0 000 6zM3 20c0-3 2.7-5 6-5s6 2 6 5M17 11l4-4M17 7l4 4' },
+  { to: '/admin', label: 'Dashboard', exact: true, icon: 'fa-solid fa-gauge-high' },
+  { to: '/admin/productos', label: 'Productos', icon: 'fa-solid fa-box-open' },
+  { to: '/admin/categorias', label: 'Categorías', icon: 'fa-solid fa-tags' },
+  { to: '/admin/pedidos', label: 'Pedidos', icon: 'fa-solid fa-receipt' },
+  { to: '/admin/usuarios', label: 'Usuarios', icon: 'fa-solid fa-users' },
 ]
 
 function isActive(item: { to: string; exact?: boolean }) {
@@ -46,22 +46,24 @@ function logout() {
           :class="{ 'admin__link--active': isActive(item) }"
           @click="open = false"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path :d="item.icon" />
-          </svg>
+          <i :class="item.icon"></i>
           {{ item.label }}
         </RouterLink>
       </nav>
 
       <div class="admin__side-foot">
-        <RouterLink to="/" class="admin__store-link">← Ir a la tienda</RouterLink>
+        <RouterLink to="/" class="admin__store-link">
+          <i class="fa-solid fa-arrow-left"></i> Ir a la tienda
+        </RouterLink>
         <button class="btn btn--ghost btn--sm btn--block" @click="logout">Cerrar sesión</button>
       </div>
     </aside>
 
     <div class="admin__body">
       <header class="admin__top">
-        <button class="admin__burger" @click="open = !open" aria-label="Menú">☰</button>
+        <button class="admin__burger" @click="open = !open" aria-label="Menú">
+          <i class="fa-solid fa-bars"></i>
+        </button>
         <div class="admin__user">
           <span class="admin__avatar">{{ user.initials }}</span>
           <div class="admin__user-info">
@@ -147,10 +149,10 @@ function logout() {
     font-size: 0.94rem;
     color: $text-on-navy;
     transition: background 0.15s ease, color 0.15s ease;
-    svg { width: 20px; height: 20px; opacity: 0.85; }
+    i { width: 22px; text-align: center; font-size: 1.02rem; opacity: 0.85; }
     &:hover { background: rgba(255, 255, 255, 0.07); color: $white; }
     &--active { background: rgba(33, 188, 251, 0.18); color: $white; }
-    &--active svg { color: $accent; opacity: 1; }
+    &--active i { color: $accent; opacity: 1; }
   }
 
   &__side-foot {
