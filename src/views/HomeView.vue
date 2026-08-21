@@ -134,7 +134,7 @@ onUnmounted(() => {
     <!-- ── Trust marquee ────────────────────────────────────────────────── -->
     <div class="marquee">
       <div class="marquee__track">
-        <span v-for="(b, i) in [...trustBadges, ...trustBadges]" :key="i">{{ b }} <em>◆</em></span>
+        <span v-for="(b, i) in [...trustBadges, ...trustBadges]" :key="i">{{ b }} <em><i class="fa-solid fa-droplet"></i></em></span>
       </div>
     </div>
 
