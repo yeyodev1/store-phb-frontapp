@@ -16,6 +16,7 @@ const root = ref<HTMLElement | null>(null)
 const heroContent = ref<HTMLElement | null>(null)
 const bandVideo = ref<HTMLVideoElement | null>(null)
 let ctx: gsap.Context | null = null
+let bandIO: IntersectionObserver | null = null
 
 function setupAnimations() {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -82,9 +83,22 @@ onMounted(async () => {
     setupAnimations()
     ScrollTrigger.refresh()
   })
+
+  // Pause the band video while it is off screen to save CPU/GPU.
+  if (bandVideo.value) {
+    const v = bandVideo.value
+    bandIO = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) v.play().catch(() => {})
+      else v.pause()
+    })
+    bandIO.observe(v)
+  }
 })
 
-onUnmounted(() => ctx?.revert())
+onUnmounted(() => {
+  ctx?.revert()
+  bandIO?.disconnect()
+})
 </script>
 
 <template>
