@@ -1,0 +1,14 @@
+// PowerHouse Biotech — Agua Kangen store typography.
+// Aligned with the PHB web project: Outfit (headings), Plus Jakarta Sans (body),
+// Space Grotesk (accents / prices / numbers).
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,400..600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-outfit: 'Outfit', sans-serif;
+  --font-jakarta: 'Plus Jakarta Sans', sans-serif;
+  --font-grotesk: 'Space Grotesk', sans-serif;
+}
+
+$font-principal: 'Outfit', sans-serif; // headings
+$font-secondary: 'Plus Jakarta Sans', sans-serif; // body
+$font-accent: 'Space Grotesk', sans-serif; // prices, stats, CTAs
