@@ -1,0 +1,172 @@
+// Global stylesheet — imported ONCE in main.ts. Base reset, element defaults,
+// reusable button/badge classes and small utilities. Tokens/mixins arrive via
+// the auto-injected index.scss.
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: $font-secondary;
+  background: $surface;
+  color: $text;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: $font-principal;
+  color: $text;
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+ul {
+  list-style: none;
+}
+
+:focus-visible {
+  @include focus-ring;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// ── Buttons ──────────────────────────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  font-family: $font-accent;
+  font-weight: 600;
+  font-size: 0.98rem;
+  line-height: 1;
+  padding: 0.9rem 1.6rem;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease,
+    border-color 0.18s ease, color 0.18s ease;
+  white-space: nowrap;
+
+  &:active { transform: translateY(1px); }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  svg { width: 1.15em; height: 1.15em; }
+}
+
+.btn--primary {
+  background: $grad-water;
+  color: #04263c;
+  box-shadow: 0 10px 26px rgba(33, 188, 251, 0.35);
+  &:hover { box-shadow: 0 14px 34px rgba(33, 188, 251, 0.5); transform: translateY(-2px); }
+}
+
+.btn--navy {
+  background: $navy;
+  color: $white;
+  &:hover { background: $navy-700; transform: translateY(-2px); }
+}
+
+.btn--gold {
+  background: linear-gradient(135deg, $gold 0%, $gold-soft 100%);
+  color: #3a2c07;
+  box-shadow: 0 10px 26px rgba(201, 169, 106, 0.35);
+  &:hover { transform: translateY(-2px); }
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: $border-strong;
+  color: $text;
+  &:hover { border-color: $navy; background: $white; }
+}
+
+.btn--light {
+  background: $white;
+  color: $navy;
+  &:hover { background: $surface-2; }
+}
+
+.btn--block { width: 100%; }
+.btn--sm { padding: 0.6rem 1.1rem; font-size: 0.85rem; }
+.btn--lg { padding: 1.05rem 2rem; font-size: 1.05rem; }
+
+// ── Chips / badges ───────────────────────────────────────────────────────────
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: $font-accent;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: $surface-2;
+  color: $text-secondary;
+}
+
+.chip--cyan  { background: rgba(33, 188, 251, 0.12); color: $cyan-strong; }
+.chip--gold  { background: rgba(201, 169, 106, 0.16); color: darken($gold, 18%); }
+.chip--sale  { background: rgba(239, 68, 68, 0.12); color: $error; }
+.chip--stock { background: rgba(16, 185, 129, 0.12); color: $success; }
+
+// ── Small utilities ──────────────────────────────────────────────────────────
+.text-grad {
+  background: $grad-water;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.section {
+  padding-block: clamp(3rem, 7vw, 6rem);
+}
+
+.eyebrow {
+  font-family: $font-accent;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: $cyan-strong;
+}
