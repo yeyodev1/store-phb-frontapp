@@ -8,16 +8,17 @@ let renderer: THREE.WebGLRenderer | null = null
 let raf = 0
 let cleanup: (() => void) | null = null
 
+// Render the water at a fraction of screen resolution (it's a soft background),
+// then let CSS stretch the canvas to full size. Huge GPU win on retina displays.
+const RENDER_SCALE = 0.6
+
 const vertex = /* glsl */ `
   varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = vec4(position, 1.0);
-  }
+  void main() { vUv = uv; gl_Position = vec4(position, 1.0); }
 `
 
 const fragment = /* glsl */ `
-  precision highp float;
+  precision mediump float;
   varying vec2 vUv;
   uniform float u_time;
   uniform float u_scroll;
@@ -34,7 +35,7 @@ const fragment = /* glsl */ `
   float fbm(vec2 p){
     float v = 0.0; float a = 0.5;
     mat2 m = mat2(1.6, 1.2, -1.2, 1.6);
-    for (int i = 0; i < 6; i++){ v += a * noise(p); p = m * p; a *= 0.5; }
+    for (int i = 0; i < 4; i++){ v += a * noise(p); p = m * p; a *= 0.5; }
     return v;
   }
 
@@ -49,10 +50,9 @@ const fragment = /* glsl */ `
                   fbm(p + 2.0 * q + vec2(8.3, 2.8)));
     float f = fbm(p + 2.0 * r);
 
-    vec2 m = vec2(u_mouse.x * aspect, u_mouse.y);
+    vec2 mo = vec2(u_mouse.x * aspect, u_mouse.y);
     vec2 pa = vec2(uv.x * aspect, uv.y);
-    float md = distance(pa, m);
-    f += (0.06 / (md + 0.09)) * 0.12;
+    f += (0.06 / (distance(pa, mo) + 0.09)) * 0.12;
 
     vec3 navy = vec3(0.004, 0.050, 0.153);
     vec3 blue = vec3(0.126, 0.580, 0.830);
@@ -60,9 +60,7 @@ const fragment = /* glsl */ `
 
     vec3 col = mix(navy, blue, smoothstep(0.18, 0.72, f));
     col = mix(col, cyan, smoothstep(0.74, 0.96, f + r.x * 0.2));
-    float caustic = pow(max(f, 0.0), 3.0);
-    col += cyan * caustic * 0.45;
-
+    col += cyan * pow(max(f, 0.0), 3.0) * 0.45;
     col = mix(col, navy, clamp(u_scroll, 0.0, 1.0) * 0.65);
 
     float vig = smoothstep(1.25, 0.35, length(uv - 0.5));
@@ -80,7 +78,8 @@ onMounted(() => {
 
   const scene = new THREE.Scene()
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
-  renderer = new THREE.WebGLRenderer({ canvas: el, antialias: true, alpha: false })
+  renderer = new THREE.WebGLRenderer({ canvas: el, antialias: false, alpha: false, powerPreference: 'low-power' })
+  renderer.setPixelRatio(1) // ignore retina DPR — the background is soft anyway
   renderer.setClearColor(0x010d27, 1)
 
   const uniforms = {
@@ -89,16 +88,14 @@ onMounted(() => {
     u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
     u_res: { value: new THREE.Vector2(1, 1) },
   }
-
   const material = new THREE.ShaderMaterial({ vertexShader: vertex, fragmentShader: fragment, uniforms })
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material)
   scene.add(mesh)
 
   function resize() {
-    const w = el!.clientWidth
-    const h = el!.clientHeight
-    renderer!.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer!.setSize(w, h, false)
+    const w = Math.max(1, Math.round(el!.clientWidth * RENDER_SCALE))
+    const h = Math.max(1, Math.round(el!.clientHeight * RENDER_SCALE))
+    renderer!.setSize(w, h, false) // don't touch CSS size — canvas is stretched by styles
     uniforms.u_res.value.set(w, h)
   }
   resize()
@@ -112,25 +109,55 @@ onMounted(() => {
     uniforms.u_scroll.value = Math.min(1, window.scrollY / (window.innerHeight || 1))
   }
 
+  // Only render while the hero is actually on screen and the tab is visible.
+  let onScreen = true
+  let running = false
+  const io = new IntersectionObserver((entries) => {
+    onScreen = entries[0]?.isIntersecting ?? false
+    if (onScreen) start()
+  })
+  io.observe(el)
+
   window.addEventListener('resize', resize)
   window.addEventListener('pointermove', onPointer, { passive: true })
   window.addEventListener('scroll', onScroll, { passive: true })
+  document.addEventListener('visibilitychange', onVis)
   onScroll()
 
-  const start = performance.now()
-  function loop() {
-    uniforms.u_time.value = (performance.now() - start) / 1000
-    uniforms.u_mouse.value.lerp(targetMouse, 0.05)
-    renderer!.render(scene, camera)
-    if (!reduce) raf = requestAnimationFrame(loop)
+  function onVis() {
+    if (document.hidden) stop()
+    else if (onScreen) start()
   }
-  loop()
+
+  const start0 = performance.now()
+  const FPS_CAP = 30 // ambient water — no need for 60/120fps (big win on ProMotion)
+  const frameInterval = 1000 / FPS_CAP
+  let last = 0
+  function loop() {
+    if (!onScreen || document.hidden) { running = false; return }
+    raf = requestAnimationFrame(loop)
+    const now = performance.now()
+    if (now - last < frameInterval) return // throttle to the cap
+    last = now
+    uniforms.u_time.value = (now - start0) / 1000
+    uniforms.u_mouse.value.lerp(targetMouse, 0.08)
+    renderer!.render(scene, camera)
+    if (reduce) { cancelAnimationFrame(raf); running = false } // one frame only
+  }
+  function start() {
+    if (running || reduce) { if (reduce) loop(); return }
+    running = true
+    raf = requestAnimationFrame(loop)
+  }
+  start()
 
   cleanup = () => {
     cancelAnimationFrame(raf)
+    io.disconnect()
     window.removeEventListener('resize', resize)
     window.removeEventListener('pointermove', onPointer)
     window.removeEventListener('scroll', onScroll)
+    document.removeEventListener('visibilitychange', onVis)
     mesh.geometry.dispose()
     material.dispose()
     renderer?.dispose()
