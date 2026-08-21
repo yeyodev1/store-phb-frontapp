@@ -25,7 +25,7 @@ function addToCart() {
 <template>
   <article class="product-card">
     <RouterLink :to="`/producto/${product.slug}`" class="product-card__media">
-      <ProductImage :src="product.images?.[0]" :label="product.modelCode" :alt="product.name" />
+      <ProductImage :src="product.images?.[0]" :label="product.modelCode" :alt="product.name" contain />
       <span v-if="hasDiscount" class="chip chip--sale product-card__flag">Oferta</span>
       <span v-else-if="product.featured" class="chip chip--gold product-card__flag">Destacado</span>
     </RouterLink>
