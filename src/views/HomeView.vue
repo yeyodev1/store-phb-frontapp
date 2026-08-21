@@ -1,40 +1,68 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { catalogService } from '@/services/catalog.service'
 import type { Product, Category } from '@/types'
 import { site, waterTypes, trustBadges } from '@/config/site'
+import { gsap, ScrollTrigger } from '@/composables/useSmoothScroll'
+import HeroCanvas from '@/components/HeroCanvas.vue'
 import ProductCard from '@/components/ProductCard.vue'
 
 const featured = ref<Product[]>([])
 const categories = ref<Category[]>([])
 const loading = ref(true)
 
-// Hero parallax — progress 0 at the very top (full opacity), 1 after one screen.
-const heroP = ref(0)
-let raf = 0
-function onHeroScroll() {
-  cancelAnimationFrame(raf)
-  raf = requestAnimationFrame(() => {
-    heroP.value = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.85)))
-  })
+const root = ref<HTMLElement | null>(null)
+const heroContent = ref<HTMLElement | null>(null)
+const bandVideo = ref<HTMLVideoElement | null>(null)
+let ctx: gsap.Context | null = null
+
+function setupAnimations() {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ctx = gsap.context(() => {
+    if (reduce) {
+      gsap.set('[data-reveal]', { opacity: 1, y: 0 })
+      return
+    }
+
+    // Hero content drifts up & fades as you scroll past the hero.
+    if (heroContent.value) {
+      gsap.to(heroContent.value, {
+        yPercent: -22,
+        opacity: 0,
+        ease: 'none',
+        scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true },
+      })
+    }
+
+    // Parallax the Higgsfield video inside the band.
+    if (bandVideo.value) {
+      gsap.fromTo(
+        bandVideo.value,
+        { yPercent: -12 },
+        {
+          yPercent: 12,
+          ease: 'none',
+          scrollTrigger: { trigger: '.band', start: 'top bottom', end: 'bottom top', scrub: true },
+        },
+      )
+    }
+
+    // Staggered reveal for every [data-reveal] block.
+    ScrollTrigger.batch('[data-reveal]', {
+      start: 'top 88%',
+      onEnter: (els) =>
+        gsap.to(els, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.09,
+          ease: 'power3.out',
+          overwrite: true,
+        }),
+    })
+  }, root.value as HTMLElement)
 }
-
-// Content drifts up & fades, video slowly zooms, overlay deepens.
-const heroStyle = computed(() => ({
-  '--content-y': `${heroP.value * -110}px`,
-  '--content-o': String(Math.max(0, 1 - heroP.value * 1.15)),
-  '--video-scale': String(1 + heroP.value * 0.22),
-  '--overlay-o': String(0.68 + heroP.value * 0.28),
-}))
-
-onMounted(() => {
-  window.addEventListener('scroll', onHeroScroll, { passive: true })
-})
-onUnmounted(() => {
-  cancelAnimationFrame(raf)
-  window.removeEventListener('scroll', onHeroScroll)
-})
 
 onMounted(async () => {
   try {
@@ -49,29 +77,26 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+  // Wait a tick so the DOM (products, etc.) is in place before wiring triggers.
+  requestAnimationFrame(() => {
+    setupAnimations()
+    ScrollTrigger.refresh()
+  })
 })
+
+onUnmounted(() => ctx?.revert())
 </script>
 
 <template>
-  <div class="home">
-    <!-- ── Cinematic video hero ─────────────────────────────────────────── -->
-    <section class="hero" :style="heroStyle">
+  <div class="home" ref="root">
+    <!-- ── Three.js WebGL hero ──────────────────────────────────────────── -->
+    <section class="hero">
       <div class="hero__media">
-        <video
-          class="hero__video"
-          autoplay
-          muted
-          loop
-          playsinline
-          preload="auto"
-          poster="/img/hero-poster.jpg"
-        >
-          <source src="/video/hero.mp4" type="video/mp4" />
-        </video>
+        <HeroCanvas />
         <div class="hero__overlay"></div>
       </div>
 
-      <div class="hero__content">
+      <div class="hero__content" ref="heroContent">
         <span class="hero__eyebrow">Distribuidor oficial Enagic®</span>
         <h1 class="hero__title">
           Cambia tu <em>Agua</em>,<br />Cambia tu <em>Vida</em>
@@ -95,25 +120,18 @@ onMounted(async () => {
     <!-- ── Trust marquee ────────────────────────────────────────────────── -->
     <div class="marquee">
       <div class="marquee__track">
-        <span v-for="(b, i) in [...trustBadges, ...trustBadges]" :key="i">
-          {{ b }} <em>◆</em>
-        </span>
+        <span v-for="(b, i) in [...trustBadges, ...trustBadges]" :key="i">{{ b }} <em>◆</em></span>
       </div>
     </div>
 
     <!-- ── 5 waters ─────────────────────────────────────────────────────── -->
     <section class="section water">
-      <div class="water__head" v-reveal>
+      <div class="water__head" data-reveal>
         <span class="eyebrow">Un solo equipo · 5 tipos de agua</span>
         <h2>El agua correcta para cada momento</h2>
       </div>
       <div class="water__strip">
-        <article
-          v-for="(w, i) in waterTypes"
-          :key="w.name"
-          class="water__card"
-          v-reveal="{ delay: i * 90 }"
-        >
+        <article v-for="w in waterTypes" :key="w.name" class="water__card" data-reveal>
           <span class="water__ph" :style="{ background: w.tone }">{{ w.ph }}</span>
           <strong>{{ w.name }}</strong>
           <p>{{ w.use }}</p>
@@ -126,7 +144,7 @@ onMounted(async () => {
 
     <!-- ── Featured products ────────────────────────────────────────────── -->
     <section class="section featured">
-      <div class="featured__head" v-reveal>
+      <div class="featured__head" data-reveal>
         <div>
           <span class="eyebrow">Los más elegidos</span>
           <h2>Ionizadores destacados</h2>
@@ -138,29 +156,27 @@ onMounted(async () => {
         <div v-for="n in 4" :key="n" class="skeleton" />
       </div>
       <div v-else-if="featured.length" class="featured__grid">
-        <div v-for="(p, i) in featured" :key="p._id" v-reveal="{ delay: i * 80 }" class="featured__item">
+        <div v-for="p in featured" :key="p._id" data-reveal class="featured__item">
           <ProductCard :product="p" />
         </div>
       </div>
-      <p v-else class="featured__empty">
-        Aún no hay productos cargados. Ejecuta el seed del backend.
-      </p>
+      <p v-else class="featured__empty">Aún no hay productos cargados. Ejecuta el seed del backend.</p>
     </section>
 
-    <!-- ── Parallax video band (scroll-combined) ────────────────────────── -->
+    <!-- ── Parallax video band (Higgsfield) ─────────────────────────────── -->
     <section class="band">
       <div class="band__media">
-        <video class="band__video" autoplay muted loop playsinline poster="/img/hero-poster.jpg">
+        <video ref="bandVideo" class="band__video" autoplay muted loop playsinline poster="/img/hero-poster.jpg">
           <source src="/video/hero.mp4" type="video/mp4" />
         </video>
         <div class="band__overlay"></div>
       </div>
-      <div class="band__content" v-reveal>
+      <div class="band__content" data-reveal>
         <span class="eyebrow band__eyebrow">La ciencia del agua Kangen</span>
         <h2>Hidrógeno molecular.<br />Poder antioxidante real.</h2>
         <p>
-          Con un ORP negativo de hasta −400 mV, el agua Kangen ayuda a neutralizar
-          radicales libres. Pequeñas moléculas de hidrógeno, gran diferencia.
+          Con un ORP negativo de hasta −400 mV, el agua Kangen ayuda a neutralizar radicales
+          libres. Pequeñas moléculas de hidrógeno, gran diferencia.
         </p>
         <RouterLink to="/beneficios" class="btn btn--light btn--lg">Ver la ciencia</RouterLink>
       </div>
@@ -169,13 +185,7 @@ onMounted(async () => {
     <!-- ── Categories ───────────────────────────────────────────────────── -->
     <section v-if="categories.length" class="section cats">
       <div class="cats__strip">
-        <RouterLink
-          v-for="(c, i) in categories"
-          :key="c._id"
-          :to="`/tienda?category=${c.slug}`"
-          class="cats__card"
-          v-reveal="{ delay: i * 90 }"
-        >
+        <RouterLink v-for="c in categories" :key="c._id" :to="`/tienda?category=${c.slug}`" class="cats__card" data-reveal>
           <h3>{{ c.name }}</h3>
           <p>{{ c.description }}</p>
           <span class="cats__go">Explorar →</span>
@@ -185,7 +195,7 @@ onMounted(async () => {
 
     <!-- ── CTA ──────────────────────────────────────────────────────────── -->
     <section class="cta-band">
-      <div class="cta-band__inner" v-reveal>
+      <div class="cta-band__inner" data-reveal>
         <div>
           <h2>¿No sabes qué modelo elegir?</h2>
           <p>Te asesoramos según tu familia, tu consumo y tu presupuesto.</p>
@@ -199,39 +209,28 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="scss">
+[data-reveal] { opacity: 0; transform: translateY(34px); }
+
 /* ── Hero ─────────────────────────────────────────────────────────────── */
 .hero {
   position: relative;
   min-height: 100svh;
-  margin-top: -72px; // pull under the transparent sticky header for a full-bleed video
+  margin-top: -74px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   overflow: hidden;
   color: $white;
+  background: $navy;
 
-  &__media {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background: $navy; // dark base so the hero is never white before the video paints
-  }
-
-  &__video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scale(var(--video-scale, 1));
-    transition: transform 0.1s linear;
-  }
+  &__media { position: absolute; inset: 0; z-index: 0; background: $navy; }
 
   &__overlay {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(180deg, rgba(1, 13, 39, 0.7) 0%, rgba(1, 13, 39, 0.5) 40%, rgba(1, 13, 39, 0.96) 100%),
-      linear-gradient(90deg, rgba(1, 13, 39, 0.94) 0%, rgba(1, 13, 39, 0.5) 45%, transparent 78%);
-    opacity: var(--overlay-o, 0.85);
+      linear-gradient(180deg, rgba(1,13,39,0.55) 0%, rgba(1,13,39,0.25) 40%, rgba(1,13,39,0.9) 100%),
+      linear-gradient(90deg, rgba(1,13,39,0.8) 0%, rgba(1,13,39,0.25) 48%, transparent 80%);
   }
 
   &__content {
@@ -242,8 +241,7 @@ onMounted(async () => {
     flex-direction: column;
     align-items: flex-start;
     gap: 1.4rem;
-    transform: translateY(var(--content-y, 0));
-    opacity: var(--content-o, 1);
+    padding-top: 74px;
   }
 
   &__eyebrow {
@@ -254,7 +252,7 @@ onMounted(async () => {
     font-size: 0.8rem;
     color: $gold-soft;
     padding: 0.5rem 1rem;
-    border: 1px solid rgba(228, 206, 158, 0.4);
+    border: 1px solid rgba(228,206,158,0.4);
     border-radius: 999px;
   }
 
@@ -264,7 +262,7 @@ onMounted(async () => {
     line-height: 0.98;
     font-weight: 800;
     letter-spacing: -0.03em;
-    text-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+    text-shadow: 0 8px 40px rgba(0,0,0,0.45);
     em {
       font-style: normal;
       background: $grad-water;
@@ -274,18 +272,8 @@ onMounted(async () => {
     }
   }
 
-  &__lead {
-    font-size: clamp(1rem, 2.2vw, 1.25rem);
-    color: rgba(255, 255, 255, 0.85);
-    max-width: 48ch;
-  }
-
-  &__cta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-    margin-top: 0.4rem;
-  }
+  &__lead { font-size: clamp(1rem, 2.2vw, 1.25rem); color: rgba(255,255,255,0.88); max-width: 48ch; }
+  &__cta { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 0.4rem; }
 
   &__scroll {
     position: absolute;
@@ -301,22 +289,18 @@ onMounted(async () => {
     font-size: 0.72rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.7);
-    opacity: var(--content-o, 1);
+    color: rgba(255,255,255,0.7);
     span {
-      width: 24px;
-      height: 38px;
-      border: 2px solid rgba(255, 255, 255, 0.5);
+      width: 24px; height: 38px;
+      border: 2px solid rgba(255,255,255,0.5);
       border-radius: 999px;
       position: relative;
       &::before {
         content: '';
         position: absolute;
-        top: 7px;
-        left: 50%;
+        top: 7px; left: 50%;
         transform: translateX(-50%);
-        width: 4px;
-        height: 8px;
+        width: 4px; height: 8px;
         border-radius: 999px;
         background: $accent;
         animation: scrolldot 1.6s ease-in-out infinite;
@@ -324,7 +308,7 @@ onMounted(async () => {
     }
   }
 }
-@keyframes scrolldot { 0%,100% { transform: translate(-50%, 0); opacity: 1; } 50% { transform: translate(-50%, 12px); opacity: 0.3; } }
+@keyframes scrolldot { 0%,100% { transform: translate(-50%,0); opacity: 1; } 50% { transform: translate(-50%,12px); opacity: 0.3; } }
 
 /* ── Marquee ──────────────────────────────────────────────────────────── */
 .marquee {
@@ -333,10 +317,8 @@ onMounted(async () => {
   overflow: hidden;
   padding: 0.9rem 0;
   &__track {
-    display: flex;
-    gap: 2.5rem;
-    white-space: nowrap;
-    width: max-content;
+    display: flex; gap: 2.5rem;
+    white-space: nowrap; width: max-content;
     animation: marquee 26s linear infinite;
     span { font-family: $font-accent; font-weight: 500; font-size: 0.9rem; letter-spacing: 0.05em; display: inline-flex; gap: 2.5rem; em { color: $accent; font-style: normal; } }
   }
@@ -349,14 +331,9 @@ onMounted(async () => {
   &__head { text-align: center; margin-bottom: 2.4rem; h2 { font-size: clamp(1.7rem, 4vw, 2.6rem); margin-top: 0.5rem; } }
   &__strip { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
   &__card {
-    flex: 1 1 180px;
-    max-width: 220px;
-    @include card;
-    padding: 1.5rem 1.3rem;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.6rem;
+    flex: 1 1 180px; max-width: 220px;
+    @include card; padding: 1.5rem 1.3rem;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 0.6rem;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     strong { font-family: $font-principal; font-size: 1.05rem; }
     p { font-size: 0.86rem; color: $text-secondary; flex: 1; }
@@ -372,11 +349,10 @@ onMounted(async () => {
   &__grid { display: flex; flex-wrap: wrap; gap: 1.5rem; }
   &__item { flex: 1 1 240px; max-width: calc(25% - 1.125rem); display: flex; > * { flex: 1; } }
   &__empty { text-align: center; color: $text-secondary; padding: 2rem; background: $surface-2; border-radius: 18px; }
-
   @include until-lg { &__item { max-width: calc(50% - 0.75rem); } }
   @include until-md { &__item { max-width: 100%; } }
 }
-.skeleton { flex: 1 1 240px; max-width: calc(25% - 1.125rem); height: 380px; border-radius: 22px; background: linear-gradient(100deg, $surface-2 30%, $surface-3 50%, $surface-2 70%); background-size: 200% 100%; animation: shimmer 1.3s infinite; }
+.skeleton { flex: 1 1 240px; max-width: calc(25% - 1.125rem); height: 380px; border-radius: 22px; background: linear-gradient(100deg, $surface-2 30%, $surface-3 50%, $surface-2 70%); background-size: 200% 100%; animation: shimmer 1.3s infinite; opacity: 1; }
 @keyframes shimmer { to { background-position: -200% 0; } }
 
 /* ── Parallax band ────────────────────────────────────────────────────── */
@@ -388,19 +364,13 @@ onMounted(async () => {
   overflow: hidden;
   color: $white;
   margin-block: 1rem;
-
-  &__media { position: absolute; inset: 0; z-index: 0; background: $navy; }
-  &__video { width: 100%; height: 100%; object-fit: cover; }
+  &__media { position: absolute; inset: -12% 0; z-index: 0; background: $navy; }
+  &__video { width: 100%; height: 124%; object-fit: cover; }
   &__overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(1,13,39,0.92) 0%, rgba(1,13,39,0.55) 55%, rgba(1,13,39,0.3) 100%); }
-
   &__content {
-    position: relative;
-    z-index: 1;
+    position: relative; z-index: 1;
     @include container;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.2rem;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 1.2rem;
     max-width: 640px;
     h2 { color: $white; font-size: clamp(1.8rem, 4.5vw, 3rem); }
     p { color: rgba(255,255,255,0.85); font-size: 1.1rem; }
@@ -413,16 +383,10 @@ onMounted(async () => {
   @include container;
   &__strip { display: flex; flex-wrap: wrap; gap: 1.2rem; }
   &__card {
-    flex: 1 1 260px;
-    padding: 1.9rem;
-    border-radius: 22px;
-    background: $grad-navy;
-    color: $white;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    overflow: hidden;
-    position: relative;
+    flex: 1 1 260px; padding: 1.9rem; border-radius: 22px;
+    background: $grad-navy; color: $white;
+    display: flex; flex-direction: column; gap: 0.6rem;
+    overflow: hidden; position: relative;
     transition: transform 0.25s ease;
     h3 { color: $white; }
     p { color: $text-on-navy; font-size: 0.9rem; flex: 1; }
@@ -437,14 +401,9 @@ onMounted(async () => {
   @include container;
   padding-block: 3.5rem;
   &__inner {
-    background: $grad-water;
-    border-radius: 30px;
+    background: $grad-water; border-radius: 30px;
     padding: clamp(2rem, 5vw, 3.5rem);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem;
     h2 { color: #04263c; }
     p { color: rgba(4,38,60,0.82); font-size: 1.05rem; margin-top: 0.3rem; }
   }
