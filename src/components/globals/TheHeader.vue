@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
 import { useUserStore } from '@/stores/user'
@@ -10,6 +10,19 @@ const user = useUserStore()
 const route = useRoute()
 
 const mobileOpen = ref(false)
+const scrolled = ref(false)
+
+// Transparent (light text) while sitting over the home hero; solidifies on scroll.
+const overHero = computed(() => route.name === 'Home' && !scrolled.value && !mobileOpen.value)
+
+function onScroll() {
+  scrolled.value = window.scrollY > 40
+}
+onMounted(() => {
+  onScroll()
+  window.addEventListener('scroll', onScroll, { passive: true })
+})
+onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
 const links = [
   { to: '/', label: 'Inicio' },
@@ -24,7 +37,7 @@ function closeMobile() {
 </script>
 
 <template>
-  <header class="header">
+  <header class="header" :class="{ 'header--over': overHero }">
     <div class="header__bar">
       <RouterLink to="/" class="header__logo" @click="closeMobile">
         <span class="header__logo-mark">PB</span>
@@ -105,6 +118,19 @@ function closeMobile() {
   background: rgba(255, 255, 255, 0.86);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid $border;
+  transition: background 0.3s ease, border-color 0.3s ease;
+
+  // Transparent variant over the hero video (light text).
+  &--over {
+    background: transparent;
+    border-color: transparent;
+    backdrop-filter: none;
+
+    .header__logo-text strong { color: #fff; }
+    .header__link { color: rgba(255, 255, 255, 0.9); &:hover { background: rgba(255,255,255,0.12); color: #fff; } }
+    .header__icon-btn { color: #fff; &:hover { background: rgba(255,255,255,0.12); } }
+    .header__burger span, .header__burger span::before, .header__burger span::after { background: #fff; }
+  }
 
   &__bar {
     @include container;
