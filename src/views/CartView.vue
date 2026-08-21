@@ -32,7 +32,7 @@ const router = useRouter()
                 <RouterLink :to="`/producto/${line.slug}`" class="cart__name">{{ line.name }}</RouterLink>
                 <span class="cart__model">{{ line.modelCode }}</span>
               </div>
-              <button class="cart__remove" @click="cart.remove(line.productId)" aria-label="Quitar">✕</button>
+              <button class="cart__remove" @click="cart.remove(line.productId)" aria-label="Quitar"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="cart__line-foot">
               <QuantityStepper
