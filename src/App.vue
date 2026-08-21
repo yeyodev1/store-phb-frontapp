@@ -1,39 +1,28 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import StoreLayout from '@/layout/StoreLayout.vue'
 import AdminLayout from '@/layout/AdminLayout.vue'
 import Toaster from '@/components/Toaster.vue'
+import PageCurtain from '@/components/PageCurtain.vue'
 import { initSmoothScroll, destroySmoothScroll } from '@/composables/useSmoothScroll'
+import { installPageTransition } from '@/composables/usePageTransition'
 
 const route = useRoute()
+const router = useRouter()
 const layout = computed(() => (route.meta.admin ? AdminLayout : StoreLayout))
 
-onMounted(() => initSmoothScroll())
+onMounted(() => {
+  initSmoothScroll()
+  installPageTransition(router)
+})
 onUnmounted(() => destroySmoothScroll())
 </script>
 
 <template>
   <component :is="layout">
-    <RouterView v-slot="{ Component }">
-      <transition name="page" mode="out-in">
-        <component :is="Component" />
-      </transition>
-    </RouterView>
+    <RouterView />
   </component>
   <Toaster />
+  <PageCurtain />
 </template>
-
-<style lang="scss">
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 0.22s ease, transform 0.22s ease;
-}
-.page-enter-from {
-  opacity: 0;
-  transform: translateY(8px);
-}
-.page-leave-to {
-  opacity: 0;
-}
-</style>
