@@ -7,8 +7,9 @@ const props = withDefaults(
     alt?: string
     label?: string
     ratio?: string
+    contain?: boolean
   }>(),
-  { ratio: '1 / 1' },
+  { ratio: '1 / 1', contain: false },
 )
 
 const hasImage = computed(() => !!props.src)
@@ -16,7 +17,13 @@ const hasImage = computed(() => !!props.src)
 
 <template>
   <div class="product-image" :style="{ aspectRatio: ratio }">
-    <img v-if="hasImage" :src="src" :alt="alt || label || 'Producto'" loading="lazy" />
+    <img
+      v-if="hasImage"
+      :src="src"
+      :alt="alt || label || 'Producto'"
+      loading="lazy"
+      :class="{ 'is-contain': contain }"
+    />
     <div v-else class="product-image__placeholder">
       <svg viewBox="0 0 120 150" class="product-image__drop" aria-hidden="true">
         <defs>
@@ -50,6 +57,14 @@ const hasImage = computed(() => !!props.src)
     width: 100%;
     height: 100%;
     object-fit: cover;
+    &.is-contain {
+      object-fit: contain;
+      padding: 8%;
+      background:
+        radial-gradient(at 50% 35%, rgba(33, 188, 251, 0.08) 0%, transparent 60%),
+        linear-gradient(160deg, #ffffff 0%, #eef4fa 100%);
+      mix-blend-mode: multiply;
+    }
   }
 
   &__placeholder {
