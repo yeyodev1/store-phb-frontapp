@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import { useUserStore } from './stores/user'
+import { reveal } from './composables/useReveal'
 import '@/styles/global.scss'
 
 const app = createApp(App)
@@ -10,6 +11,7 @@ const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
+app.directive('reveal', reveal)
 
 // Restore session from localStorage before mount.
 const userStore = useUserStore(pinia)
