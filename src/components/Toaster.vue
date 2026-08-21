@@ -10,7 +10,7 @@ const toast = useToastStore()
         <div v-for="t in toast.items" :key="t.id" class="toast" :class="`toast--${t.type}`">
           <span class="toast__dot" />
           <span class="toast__msg">{{ t.message }}</span>
-          <button class="toast__x" @click="toast.dismiss(t.id)" aria-label="Cerrar">✕</button>
+          <button class="toast__x" @click="toast.dismiss(t.id)" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
         </div>
       </transition-group>
     </div>
