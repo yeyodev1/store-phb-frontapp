@@ -110,7 +110,7 @@ onMounted(load)
         <h1>Usuarios</h1>
         <p>Gestión de clientes y administradores</p>
       </div>
-      <button class="btn btn--primary" @click="openNew">+ Nuevo usuario</button>
+      <button class="btn btn--primary" @click="openNew"><i class="fa-solid fa-user-plus"></i> Nuevo usuario</button>
     </header>
 
     <div class="au__search">
@@ -137,8 +137,8 @@ onMounted(load)
         </span>
         <span class="au__date">{{ formatDate(u.createdAt) }}</span>
         <div class="au__actions">
-          <button class="btn btn--ghost btn--sm" @click="openEdit(u)">Editar</button>
-          <button class="au__del" @click="remove(u)" :disabled="u._id === me.id">🗑</button>
+          <button class="btn btn--ghost btn--sm" @click="openEdit(u)"><i class="fa-solid fa-pen"></i> Editar</button>
+          <button class="au__del" @click="remove(u)" :disabled="u._id === me.id" aria-label="Eliminar"><i class="fa-solid fa-trash"></i></button>
         </div>
       </article>
     </div>
@@ -152,7 +152,7 @@ onMounted(load)
         <div v-if="showModal" class="modal" role="dialog">
           <header class="modal__head">
             <h3>{{ editing ? 'Editar usuario' : 'Nuevo usuario' }}</h3>
-            <button class="modal__close" @click="showModal = false">✕</button>
+            <button class="modal__close" @click="showModal = false" aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
           </header>
           <div class="modal__body">
             <label class="field"><span>Nombre</span><input v-model="form.name" type="text" /></label>
