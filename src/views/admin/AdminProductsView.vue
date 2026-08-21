@@ -50,7 +50,9 @@ onMounted(load)
         <h1>Productos</h1>
         <p>{{ products.length }} productos en catálogo</p>
       </div>
-      <RouterLink to="/admin/productos/nuevo" class="btn btn--primary">+ Nuevo producto</RouterLink>
+      <RouterLink to="/admin/productos/nuevo" class="btn btn--primary">
+        <i class="fa-solid fa-plus"></i> Nuevo producto
+      </RouterLink>
     </header>
 
     <div class="ap__search">
@@ -76,8 +78,12 @@ onMounted(load)
           <span v-if="!p.isActive" class="chip">Inactivo</span>
         </div>
         <div class="ap__actions">
-          <RouterLink :to="`/admin/productos/${p._id}`" class="btn btn--ghost btn--sm">Editar</RouterLink>
-          <button class="ap__del" @click="remove(p)" aria-label="Eliminar">🗑</button>
+          <RouterLink :to="`/admin/productos/${p._id}`" class="btn btn--ghost btn--sm">
+            <i class="fa-solid fa-pen"></i> Editar
+          </RouterLink>
+          <button class="ap__del" @click="remove(p)" aria-label="Eliminar">
+            <i class="fa-solid fa-trash"></i>
+          </button>
         </div>
       </article>
     </div>
