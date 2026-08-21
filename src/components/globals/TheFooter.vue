@@ -10,11 +10,7 @@ const year = new Date().getFullYear()
     <div class="footer__inner">
       <div class="footer__brand">
         <div class="footer__logo">
-          <span class="footer__mark">PB</span>
-          <div>
-            <strong>PowerHouse Biotech</strong>
-            <small>{{ site.storeName }}</small>
-          </div>
+          <img src="/img/logo-white.png" alt="PowerHouse Biotech" class="footer__logo-img" />
         </div>
         <p class="footer__tagline">{{ site.tagline }}</p>
         <a :href="`https://wa.me/${site.contact.whatsapp}`" class="btn btn--gold btn--sm" target="_blank" rel="noopener">
@@ -78,22 +74,11 @@ const year = new Date().getFullYear()
     display: flex;
     align-items: center;
     gap: 0.7rem;
-    strong { display: block; font-family: $font-principal; color: $white; font-size: 1.05rem; }
-    small { font-family: $font-accent; letter-spacing: 0.08em; text-transform: uppercase; color: $accent; font-size: 0.72rem; }
   }
 
-  &__mark {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
+  &__logo-img {
     height: 44px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    color: $accent;
-    font-family: $font-principal;
-    font-weight: 800;
+    width: auto;
   }
 
   &__tagline {
