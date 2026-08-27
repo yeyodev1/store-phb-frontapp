@@ -74,7 +74,7 @@ export const themes = [
   {
     slug: 'biomarcadores',
     name: 'Mis biomarcadores',
-    icon: 'fa-solid fa-droplet',
+    icon: 'fa-solid fa-vial',
     copy: 'Aprende qué información pueden aportar glucosa, insulina, HbA1c, inflamación, lípidos, función renal, hormonas y otros indicadores.',
   },
   {
