@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { catalogService } from '@/services/catalog.service'
-import type { Product, Category } from '@/types'
+import type { Product, Category, Theme, DisplayTier } from '@/types'
+import { THEME_LABELS } from '@/utils/product'
 import ProductCard from '@/components/ProductCard.vue'
 
 const route = useRoute()
@@ -13,6 +14,7 @@ const categories = ref<Category[]>([])
 const loading = ref(true)
 const search = ref((route.query.search as string) || '')
 const activeCategory = ref((route.query.category as string) || '')
+const activeThemes = ref<Theme[]>([])
 const sort = ref('-createdAt')
 
 const sorts = [
@@ -22,13 +24,20 @@ const sorts = [
   { value: 'name', label: 'Nombre A–Z' },
 ]
 
+const allThemes = Object.keys(THEME_LABELS) as Theme[]
+
+const tierGroups: { tier: DisplayTier; heading: string }[] = [
+  { tier: 'comienza-aqui', heading: 'Comienza aquí' },
+  { tier: 'populares', heading: 'Más populares' },
+  { tier: 'nuevos', heading: 'Nuevos' },
+]
+
 async function load() {
   loading.value = true
   try {
     products.value = (
       await catalogService.listProducts({
         search: search.value,
-        category: activeCategory.value,
         sort: sort.value,
         limit: 48,
       })
@@ -40,9 +49,39 @@ async function load() {
   }
 }
 
+function matchesCategory(p: Product): boolean {
+  if (!activeCategory.value) return true
+  if (p.categorySlugs?.length) return p.categorySlugs.includes(activeCategory.value)
+  return p.categorySlug === activeCategory.value
+}
+
+function matchesThemes(p: Product): boolean {
+  if (!activeThemes.value.length) return true
+  return activeThemes.value.some((t) => p.themes?.includes(t))
+}
+
+const filteredProducts = computed(() => products.value.filter((p) => matchesCategory(p) && matchesThemes(p)))
+
+const groupedProducts = computed(() => {
+  const groups = tierGroups.map((g) => ({
+    ...g,
+    items: filteredProducts.value.filter((p) => p.displayTier === g.tier),
+  }))
+  const rest = filteredProducts.value.filter(
+    (p) => !tierGroups.some((g) => g.tier === p.displayTier),
+  )
+  return { groups, rest }
+})
+
 function setCategory(slug: string) {
   activeCategory.value = activeCategory.value === slug ? '' : slug
   router.replace({ query: { ...(activeCategory.value ? { category: activeCategory.value } : {}) } })
+}
+
+function toggleTheme(theme: Theme) {
+  activeThemes.value = activeThemes.value.includes(theme)
+    ? activeThemes.value.filter((t) => t !== theme)
+    : [...activeThemes.value, theme]
 }
 
 let timer: number
@@ -53,7 +92,6 @@ function onSearch() {
 
 watch(() => route.query.category, (c) => {
   activeCategory.value = (c as string) || ''
-  load()
 })
 watch(sort, load)
 
@@ -68,8 +106,8 @@ onMounted(async () => {
     <header class="catalog__hero">
       <div class="catalog__hero-inner">
         <span class="eyebrow">Tienda oficial</span>
-        <h1>Ionizadores y equipos Kangen</h1>
-        <p>Equipos originales Enagic con garantía oficial y asesoría personalizada.</p>
+        <h1>Ionizadores Kangen y ecosistema Juan Román Garza × PHB</h1>
+        <p>Equipos originales Enagic, conocimiento y programas de salud con asesoría personalizada.</p>
       </div>
     </header>
 
@@ -97,12 +135,39 @@ onMounted(async () => {
         </button>
       </div>
 
+      <div class="catalog__themes">
+        <span class="catalog__themes-label">Temas:</span>
+        <button
+          v-for="t in allThemes"
+          :key="t"
+          class="chip"
+          :class="{ 'chip--gold': activeThemes.includes(t) }"
+          @click="toggleTheme(t)"
+        >
+          {{ THEME_LABELS[t] }}
+        </button>
+      </div>
+
       <div v-if="loading" class="catalog__grid">
         <div v-for="n in 6" :key="n" class="skeleton" />
       </div>
-      <div v-else-if="products.length" class="catalog__grid">
-        <ProductCard v-for="p in products" :key="p._id" :product="p" />
-      </div>
+
+      <template v-else-if="filteredProducts.length">
+        <section v-for="g in groupedProducts.groups" :key="g.tier" v-show="g.items.length" class="catalog__section">
+          <h2 class="catalog__section-title">{{ g.heading }}</h2>
+          <div class="catalog__grid">
+            <ProductCard v-for="p in g.items" :key="p._id" :product="p" />
+          </div>
+        </section>
+
+        <section v-if="groupedProducts.rest.length" class="catalog__section">
+          <h2 class="catalog__section-title">Todo el catálogo</h2>
+          <div class="catalog__grid">
+            <ProductCard v-for="p in groupedProducts.rest" :key="p._id" :product="p" />
+          </div>
+        </section>
+      </template>
+
       <div v-else class="catalog__empty">
         <h3>Sin resultados</h3>
         <p>No encontramos productos con esos filtros.</p>
@@ -162,18 +227,43 @@ onMounted(async () => {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    margin-bottom: 0.9rem;
+    .chip { cursor: pointer; border: none; }
+  }
+
+  &__themes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: 1.8rem;
     .chip { cursor: pointer; border: none; }
+  }
+
+  &__themes-label {
+    font-size: 0.82rem;
+    color: $text-secondary;
+    margin-right: 0.2rem;
+  }
+
+  &__section {
+    margin-bottom: 2.6rem;
+    &:last-child { margin-bottom: 0; }
+  }
+
+  &__section-title {
+    font-size: 1.3rem;
+    margin-bottom: 1.1rem;
   }
 
   &__grid {
     display: flex;
     flex-wrap: wrap;
     gap: 1.4rem;
-    > * { flex: 1 1 240px; max-width: calc(33.333% - 0.94rem); }
+    > * { flex: 1 1 240px; max-width: 100%; }
 
-    @include until-lg { > * { max-width: calc(50% - 0.7rem); } }
-    @include until-md { > * { max-width: 100%; } }
+    @include sm { > * { max-width: calc(50% - 0.7rem); } }
+    @include lg { > * { max-width: calc(33.333% - 0.94rem); } }
   }
 
   &__empty {
