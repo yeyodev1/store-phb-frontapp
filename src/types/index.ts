@@ -9,6 +9,40 @@ export interface Spec {
   value: string
 }
 
+/** Define cómo se compra y cómo se entrega un producto. */
+export type ProductType =
+  | 'physical'
+  | 'digital'
+  | 'assessment'
+  | 'program'
+  | 'clinical'
+
+export type DeliveryMethod =
+  | 'shipping'
+  | 'download'
+  | 'platform-access'
+  | 'external-assessment'
+  | 'scheduled-consultation'
+
+/** Los tres niveles de exhibición del catálogo. */
+export type DisplayTier = 'comienza-aqui' | 'populares' | 'nuevos'
+
+/** Ejes por los que el visitante navega su preocupación. */
+export type Theme =
+  | 'biomarcadores'
+  | 'prevencion'
+  | 'comportamiento'
+  | 'regeneracion'
+  | 'longevidad'
+  | 'innovacion'
+
+export interface DigitalAsset {
+  url: string
+  fileName?: string
+  mimeType?: string
+  sizeBytes?: number
+}
+
 export interface Product {
   _id: string
   name: string
@@ -30,6 +64,45 @@ export interface Product {
   tags: string[]
   createdAt?: string
   updatedAt?: string
+
+  // --- Naturaleza del producto ---
+  productType: ProductType
+  deliveryMethod: DeliveryMethod
+
+  /** Los cuatro datos que toda ficha muestra siempre. */
+  format?: string
+  whatYouLearn?: string
+  idealFor?: string
+  timeRequired?: string
+
+  // --- Entrega digital ---
+  digitalAsset?: DigitalAsset
+  accessUrl?: string
+  accessDurationDays?: number | null
+
+  /** Corta el carrito: los programas clínicos se evalúan, no se compran. */
+  requiresEvaluation: boolean
+  evaluationUrl?: string
+  ctaLabel?: string
+  isLeadMagnet: boolean
+
+  // --- Taxonomía ---
+  categorySlugs: string[]
+  themes: Theme[]
+  displayTier?: DisplayTier
+
+  // --- Cobro ---
+  stripeProductId?: string
+  stripePriceId?: string
+  subscription?: {
+    isSubscription: boolean
+    interval?: 'month' | 'year'
+  }
+
+  // Virtuales que envía el backend
+  isPurchasable?: boolean
+  isDigital?: boolean
+  resolvedCtaLabel?: string
 }
 
 export interface Category {
