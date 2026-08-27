@@ -25,19 +25,32 @@ const hasImage = computed(() => !!props.src)
       :class="{ 'is-contain': contain }"
     />
     <div v-else class="product-image__placeholder">
-      <svg viewBox="0 0 120 150" class="product-image__drop" aria-hidden="true">
+      <svg viewBox="0 0 120 120" class="product-image__mark" aria-hidden="true">
         <defs>
-          <linearGradient id="drop" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id="phbPulse" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stop-color="#2094D2" />
-            <stop offset="55%" stop-color="#21BCFB" />
             <stop offset="100%" stop-color="#18E7F0" />
           </linearGradient>
         </defs>
-        <path
-          d="M60 8 C60 8 108 66 108 100 A48 48 0 0 1 12 100 C12 66 60 8 60 8 Z"
-          fill="url(#drop)"
+        <circle
+          cx="60"
+          cy="60"
+          r="50"
+          fill="none"
+          stroke="#C9A96A"
+          stroke-width="2"
+          stroke-opacity="0.5"
+          stroke-dasharray="4 10"
+          stroke-linecap="round"
         />
-        <ellipse cx="44" cy="92" rx="14" ry="20" fill="rgba(255,255,255,0.35)" />
+        <path
+          d="M28 60 h14 l7 -16 l10 32 l8 -22 l6 6 h19"
+          fill="none"
+          stroke="url(#phbPulse)"
+          stroke-width="4.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
       </svg>
       <span v-if="label" class="product-image__label">{{ label }}</span>
     </div>
@@ -79,10 +92,10 @@ const hasImage = computed(() => !!props.src)
       linear-gradient(160deg, #f2f8fe 0%, #e6eef7 100%);
   }
 
-  &__drop {
-    width: 42%;
-    max-width: 96px;
-    filter: drop-shadow(0 12px 22px rgba(33, 188, 251, 0.32));
+  &__mark {
+    width: 38%;
+    max-width: 88px;
+    filter: drop-shadow(0 12px 22px rgba(33, 188, 251, 0.22));
     animation: float 5s ease-in-out infinite;
   }
 
