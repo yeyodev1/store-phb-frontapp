@@ -85,6 +85,8 @@ export interface Product {
   evaluationUrl?: string
   ctaLabel?: string
   isLeadMagnet: boolean
+  /** El negocio todavía no fija el precio: se muestra "Precio a confirmar". */
+  priceOnRequest?: boolean
 
   // --- Taxonomía ---
   categorySlugs: string[]
