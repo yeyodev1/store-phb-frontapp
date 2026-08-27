@@ -7,7 +7,7 @@ interface CurtainEls {
   root: HTMLElement
   panel: HTMLElement
   center: HTMLElement
-  drop: HTMLElement
+  mark: HTMLElement
 }
 
 let els: CurtainEls | null = null
@@ -43,7 +43,7 @@ function cover(): Promise<void> {
     tl.set(els.root, { autoAlpha: 1, pointerEvents: 'auto' })
       .fromTo(els.panel, { scaleY: 0, transformOrigin: 'bottom' }, { scaleY: 1, duration: 0.5, ease: 'power3.inOut' })
       .to(els.center, { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power2.out' }, '-=0.25')
-      .to(els.drop, { scale: 1.12, duration: 0.5, ease: 'sine.inOut', yoyo: true, repeat: 1 }, '-=0.35')
+      .to(els.mark, { scale: 1.12, duration: 0.5, ease: 'sine.inOut', yoyo: true, repeat: 1 }, '-=0.35')
   })
 }
 
