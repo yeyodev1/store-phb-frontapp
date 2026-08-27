@@ -29,7 +29,7 @@ onMounted(async () => {
   <div class="dash">
     <header class="dash__head">
       <h1>Dashboard</h1>
-      <p>Resumen de tu tienda Agua Kangen</p>
+      <p>Resumen de tu tienda</p>
     </header>
 
     <div class="dash__stats">

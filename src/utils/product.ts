@@ -24,7 +24,7 @@ export function isLeadMagnet(product: Product): boolean {
   return !!product.isLeadMagnet
 }
 
-/** true solo para el catálogo físico Kangen — specs/stock/envío aplican. */
+/** true solo para producto físico — specs, stock y envío aplican. */
 export function isPhysical(product: Product): boolean {
   return product.productType === 'physical'
 }

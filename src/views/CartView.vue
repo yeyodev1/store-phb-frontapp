@@ -16,7 +16,7 @@ const router = useRouter()
     <div v-if="cart.isEmpty" class="cart__empty">
       <div class="cart__empty-drop"><ProductImage label="Vacío" /></div>
       <h3>Tu carrito está vacío</h3>
-      <p>Descubre los ionizadores que transforman tu agua.</p>
+      <p>Explora la biblioteca y empieza por entender dónde estás.</p>
       <RouterLink to="/tienda" class="btn btn--primary btn--lg">Ir a la tienda</RouterLink>
     </div>
 

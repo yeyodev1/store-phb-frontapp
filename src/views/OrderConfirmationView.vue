@@ -36,7 +36,8 @@ onMounted(async () => {
       </div>
       <h1>¡Gracias por tu pedido!</h1>
       <p class="confirm__lead">
-        Hemos recibido tu solicitud. Un asesor te contactará para coordinar el pago y la entrega.
+        Hemos recibido tu solicitud. Acceso inmediato tras confirmar tu pago: te enviamos el acceso
+        por correo y un asesor te contactará para acompañarte.
       </p>
       <p class="confirm__num">Pedido <strong>{{ route.params.orderNumber }}</strong></p>
 

@@ -44,7 +44,7 @@ function onCtaClick() {
 
     <div class="product-card__body">
       <span v-if="product.format" class="product-card__eyebrow">{{ product.format }}</span>
-      <span v-else class="product-card__model">{{ product.modelCode || 'Enagic' }}</span>
+      <span v-else-if="product.modelCode" class="product-card__model">{{ product.modelCode }}</span>
 
       <RouterLink :to="`/producto/${product.slug}`" class="product-card__title">
         {{ product.name }}

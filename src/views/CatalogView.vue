@@ -106,8 +106,8 @@ onMounted(async () => {
     <header class="catalog__hero">
       <div class="catalog__hero-inner">
         <span class="eyebrow">Tienda oficial</span>
-        <h1>Ionizadores Kangen y ecosistema Juan Román Garza × PHB</h1>
-        <p>Equipos originales Enagic, conocimiento y programas de salud con asesoría personalizada.</p>
+        <h1>Una biblioteca para entender mejor tu salud.</h1>
+        <p>Libros, guías, cursos, evaluaciones y programas para comprender, prevenir y actuar con mayor inteligencia.</p>
       </div>
     </header>
 

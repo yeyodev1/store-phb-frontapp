@@ -33,7 +33,7 @@ function logout() {
         <span class="admin__mark">PB</span>
         <div>
           <strong>PHB Admin</strong>
-          <small>Agua Kangen</small>
+          <small>PHB</small>
         </div>
       </div>
 
