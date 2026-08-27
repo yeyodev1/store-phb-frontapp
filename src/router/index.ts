@@ -2,13 +2,12 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
 const routes: Array<RouteRecordRaw> = [
   // ── Storefront ──────────────────────────────────────────────────────────
-  { path: '/', name: 'Home', component: () => import('@/views/HomeView.vue'), meta: { title: 'Agua Kangen' } },
+  { path: '/', name: 'Home', component: () => import('@/views/HomeView.vue'), meta: { title: 'Inicio' } },
   { path: '/tienda', name: 'Catalog', component: () => import('@/views/CatalogView.vue'), meta: { title: 'Tienda' } },
   { path: '/producto/:slug', name: 'Product', component: () => import('@/views/ProductView.vue'), meta: { title: 'Producto' } },
   { path: '/carrito', name: 'Cart', component: () => import('@/views/CartView.vue'), meta: { title: 'Carrito' } },
   { path: '/checkout', name: 'Checkout', component: () => import('@/views/CheckoutView.vue'), meta: { title: 'Checkout' } },
   { path: '/pedido/:orderNumber', name: 'OrderConfirmation', component: () => import('@/views/OrderConfirmationView.vue'), meta: { title: 'Pedido confirmado' } },
-  { path: '/beneficios', name: 'Benefits', component: () => import('@/views/BenefitsView.vue'), meta: { title: 'Beneficios' } },
 
   // ── Auth ────────────────────────────────────────────────────────────────
   { path: '/login', name: 'Login', component: () => import('@/views/LoginView.vue'), meta: { title: 'Iniciar sesión' } },
@@ -52,7 +51,7 @@ router.beforeEach((to, _from, next) => {
     return next({ path: accountType === 'admin' ? '/admin' : '/cuenta' })
   }
 
-  document.title = to.meta.title ? `${to.meta.title} · PHB Agua Kangen` : 'PHB Agua Kangen'
+  document.title = to.meta.title ? `${to.meta.title} · Juan Román Garza × PHB` : 'Juan Román Garza × PHB'
   next()
 })
 
