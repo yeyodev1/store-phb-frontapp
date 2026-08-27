@@ -26,9 +26,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
 const links = [
   { to: '/', label: 'Inicio' },
-  { to: '/tienda', label: 'Tienda' },
-  { to: '/tienda?category=ionizadores', label: 'Ionizadores' },
-  { to: '/beneficios', label: 'Beneficios' },
+  { to: '/tienda', label: 'Catálogo' },
 ]
 
 function closeMobile() {
@@ -40,8 +38,8 @@ function closeMobile() {
   <header class="header" :class="{ 'header--over': overHero }">
     <div class="header__bar">
       <RouterLink to="/" class="header__logo" @click="closeMobile">
-        <img src="/img/logo-white.png" alt="PowerHouse Biotech" class="header__logo-img" />
-        <span class="header__logo-sub">Agua Kangen</span>
+        <span class="header__logo-name">{{ site.brand }}</span>
+        <span class="header__logo-sub">× {{ site.storeName }}</span>
       </RouterLink>
 
       <nav class="header__nav">
@@ -54,6 +52,10 @@ function closeMobile() {
         >
           {{ l.label }}
         </RouterLink>
+        <a :href="site.links.evaluacion" class="header__link header__link--external" target="_blank" rel="noopener">
+          Evaluarme
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </a>
       </nav>
 
       <div class="header__actions">
@@ -99,6 +101,10 @@ function closeMobile() {
         >
           {{ l.label }}
         </RouterLink>
+        <a :href="site.links.evaluacion" class="header__mobile-link" target="_blank" rel="noopener" @click="closeMobile">
+          Evaluarme
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </a>
         <a :href="`https://wa.me/${site.contact.whatsapp}`" class="btn btn--gold btn--block" target="_blank" rel="noopener">
           Asesoría por WhatsApp
         </a>
@@ -134,26 +140,29 @@ function closeMobile() {
 
   &__logo {
     display: flex;
-    align-items: center;
-    gap: 0.7rem;
+    align-items: baseline;
+    gap: 0.6rem;
   }
 
-  &__logo-img {
-    height: 34px;
-    width: auto;
-    display: block;
+  &__logo-name {
+    font-family: $font-principal;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #fff;
+    white-space: nowrap;
   }
 
   &__logo-sub {
+    display: none;
     font-family: $font-accent;
     font-size: 0.68rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: $accent;
-    padding-left: 0.7rem;
+    padding-left: 0.6rem;
     border-left: 1px solid rgba(255, 255, 255, 0.25);
 
-    @include until-md { display: none; }
+    @include sm { display: inline-block; }
   }
 
   &__nav {
@@ -174,6 +183,12 @@ function closeMobile() {
     transition: background 0.15s ease, color 0.15s ease;
     &:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
     &--active { color: $accent; }
+    &--external {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      i { font-size: 0.72rem; }
+    }
   }
 
   &__actions { display: flex; align-items: center; gap: 0.4rem; }
@@ -239,11 +254,15 @@ function closeMobile() {
   }
 
   &__mobile-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     font-family: $font-secondary;
     font-weight: 500;
     padding: 0.85rem 0.5rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.9);
+    i { font-size: 0.75rem; }
   }
 }
 

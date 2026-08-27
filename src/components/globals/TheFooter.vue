@@ -10,25 +10,25 @@ const year = new Date().getFullYear()
     <div class="footer__inner">
       <div class="footer__brand">
         <div class="footer__logo">
-          <img src="/img/logo-white.png" alt="PowerHouse Biotech" class="footer__logo-img" />
+          <span class="footer__logo-name">{{ site.brand }}</span>
+          <span class="footer__logo-sub">× {{ site.storeName }}</span>
         </div>
         <p class="footer__tagline">{{ site.tagline }}</p>
         <a :href="`https://wa.me/${site.contact.whatsapp}`" class="btn btn--gold btn--sm" target="_blank" rel="noopener">
+          <i class="fa-brands fa-whatsapp"></i>
           Escríbenos por WhatsApp
         </a>
       </div>
 
       <div class="footer__col">
-        <h4>Tienda</h4>
-        <RouterLink to="/tienda">Todos los productos</RouterLink>
-        <RouterLink to="/tienda?category=ionizadores">Ionizadores</RouterLink>
-        <RouterLink to="/tienda?category=spa-ducha">Spa & Ducha</RouterLink>
-        <RouterLink to="/tienda?category=filtros-repuestos">Filtros</RouterLink>
+        <h4>Ecosistema</h4>
+        <RouterLink to="/tienda">Catálogo</RouterLink>
+        <a :href="site.links.evaluacion" target="_blank" rel="noopener">Evaluación</a>
+        <a :href="site.links.hub" target="_blank" rel="noopener">Hub de salud</a>
       </div>
 
       <div class="footer__col">
-        <h4>Compañía</h4>
-        <RouterLink to="/beneficios">Beneficios del agua</RouterLink>
+        <h4>Cuenta</h4>
         <RouterLink to="/cuenta">Mi cuenta</RouterLink>
         <RouterLink to="/login">Iniciar sesión</RouterLink>
       </div>
@@ -41,9 +41,16 @@ const year = new Date().getFullYear()
       </div>
     </div>
 
+    <div class="footer__legal">
+      <p>
+        El contenido de esta tienda tiene fines educativos e informativos y no sustituye una consulta,
+        diagnóstico o tratamiento médico profesional. Toda intervención clínica requiere evaluación
+        previa e indicación de un profesional de la salud.
+      </p>
+    </div>
+
     <div class="footer__bottom">
-      <span>© {{ year }} PowerHouse Biotech · Agua Kangen</span>
-      <span>Distribuidor oficial Enagic®</span>
+      <span>© {{ year }} {{ site.brand }} × {{ site.storeName }}</span>
     </div>
   </footer>
 </template>
@@ -72,13 +79,24 @@ const year = new Date().getFullYear()
 
   &__logo {
     display: flex;
-    align-items: center;
-    gap: 0.7rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
-  &__logo-img {
-    height: 44px;
-    width: auto;
+  &__logo-name {
+    font-family: $font-principal;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: $white;
+  }
+
+  &__logo-sub {
+    font-family: $font-accent;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $accent;
   }
 
   &__tagline {
@@ -105,6 +123,18 @@ const year = new Date().getFullYear()
       transition: color 0.15s ease;
     }
     a:hover { color: $accent; }
+  }
+
+  &__legal {
+    @include container;
+    padding-top: 0.4rem;
+
+    p {
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.5);
+      max-width: 760px;
+    }
   }
 
   &__bottom {
