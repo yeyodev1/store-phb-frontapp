@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import type { CartLine, Product } from '@/types'
+import { canAddToCart } from '@/utils/product'
 
 const STORAGE_KEY = 'phb_cart'
 
@@ -31,7 +32,13 @@ export const useCartStore = defineStore('cart', {
       } catch {}
     },
 
-    add(product: Product, quantity = 1) {
+    /**
+     * Última red de seguridad: si el producto requiere evaluación (clínico)
+     * o es un lead magnet gratuito, nunca entra al carrito.
+     */
+    add(product: Product, quantity = 1): boolean {
+      if (!canAddToCart(product)) return false
+
       const existing = this.lines.find((l) => l.productId === product._id)
       if (existing) {
         existing.quantity += quantity
@@ -48,6 +55,7 @@ export const useCartStore = defineStore('cart', {
       }
       this.save()
       this.isOpen = true
+      return true
     },
 
     setQuantity(productId: string, quantity: number) {
