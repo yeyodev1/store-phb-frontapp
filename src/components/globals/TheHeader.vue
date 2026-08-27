@@ -27,6 +27,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 const links = [
   { to: '/', label: 'Inicio' },
   { to: '/tienda', label: 'Catálogo' },
+  { to: '/evaluate', label: 'Evalúate' },
 ]
 
 function closeMobile() {

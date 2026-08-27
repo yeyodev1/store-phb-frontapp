@@ -4,6 +4,7 @@ const routes: Array<RouteRecordRaw> = [
   // ── Storefront ──────────────────────────────────────────────────────────
   { path: '/', name: 'Home', component: () => import('@/views/HomeView.vue'), meta: { title: 'Inicio' } },
   { path: '/tienda', name: 'Catalog', component: () => import('@/views/CatalogView.vue'), meta: { title: 'Tienda' } },
+  { path: '/evaluate', name: 'Evaluate', component: () => import('@/views/EvaluateView.vue'), meta: { title: 'Evalúate — PHB' } },
   { path: '/producto/:slug', name: 'Product', component: () => import('@/views/ProductView.vue'), meta: { title: 'Producto' } },
   { path: '/carrito', name: 'Cart', component: () => import('@/views/CartView.vue'), meta: { title: 'Carrito' } },
   { path: '/checkout', name: 'Checkout', component: () => import('@/views/CheckoutView.vue'), meta: { title: 'Checkout' } },
