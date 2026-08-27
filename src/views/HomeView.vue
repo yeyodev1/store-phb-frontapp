@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 import { catalogService } from '@/services/catalog.service'
 import type { Product } from '@/types'
 import { site, method, worlds, themes } from '@/config/site'
+import { JUAN, PRESS } from '@/config/media'
 import { gsap, ScrollTrigger } from '@/composables/useSmoothScroll'
 import ProductCard from '@/components/ProductCard.vue'
 
@@ -97,25 +98,47 @@ onUnmounted(() => {
   <div class="home" ref="root">
     <!-- ── 01. Hero ─────────────────────────────────────────────────────── -->
     <section class="hero">
-      <div class="hero__content" ref="heroContent">
-        <span class="hero__eyebrow">Juan Román Garza × PHB</span>
-        <h1 class="hero__title">Entiende tu salud. Decide mejor. Actúa antes.</h1>
-        <p class="hero__lead">{{ site.description }}</p>
+      <div class="hero__grid">
+        <div class="hero__content" ref="heroContent">
+          <span class="hero__eyebrow">Juan Román Garza × PHB</span>
+          <h1 class="hero__title">Entiende tu salud. Decide mejor. Actúa antes.</h1>
+          <p class="hero__lead">{{ site.description }}</p>
 
-        <div class="hero__cta">
-          <RouterLink to="/tienda" class="btn btn--primary btn--lg">Explorar biblioteca</RouterLink>
-          <a :href="site.links.evaluacion" class="btn btn--light btn--lg" target="_blank" rel="noopener">
-            Evaluar mi salud
-          </a>
+          <div class="hero__cta">
+            <RouterLink to="/tienda" class="btn btn--primary btn--lg">Explorar biblioteca</RouterLink>
+            <a :href="site.links.evaluacion" class="btn btn--light btn--lg" target="_blank" rel="noopener">
+              Evaluar mi salud
+            </a>
+          </div>
+
+          <ol class="hero__method">
+            <li v-for="(step, i) in method" :key="step">
+              <span class="hero__method-num">{{ String(i + 1).padStart(2, '0') }}</span>
+              <span class="hero__method-label">{{ step }}</span>
+              <i v-if="i < method.length - 1" class="fa-solid fa-chevron-right hero__method-arrow"></i>
+            </li>
+          </ol>
         </div>
 
-        <ol class="hero__method">
-          <li v-for="(step, i) in method" :key="step">
-            <span class="hero__method-num">{{ String(i + 1).padStart(2, '0') }}</span>
-            <span class="hero__method-label">{{ step }}</span>
-            <i v-if="i < method.length - 1" class="fa-solid fa-chevron-right hero__method-arrow"></i>
-          </li>
-        </ol>
+        <div class="hero__portrait">
+          <div class="hero__portrait-frame">
+            <img :src="JUAN.portrait" alt="Retrato de Juan Román Garza" />
+          </div>
+          <p class="hero__portrait-caption">
+            Juan Román Garza
+            <span>Psicología de la Salud · Medicina Conductual · Longevidad Productiva</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Barra de medios ──────────────────────────────────────────────── -->
+    <section class="press">
+      <div class="press__inner">
+        <span class="press__label">Reconocido en</span>
+        <div class="press__logos">
+          <img v-for="(logo, i) in PRESS" :key="logo" :src="logo" :alt="`Medio de prensa ${i + 1}`" />
+        </div>
       </div>
     </section>
 
@@ -139,6 +162,37 @@ onUnmounted(() => {
           <p>{{ w.copy }}</p>
           <span class="worlds__go">Explorar <i class="fa-solid fa-arrow-right"></i></span>
         </RouterLink>
+      </div>
+    </section>
+
+    <!-- ── Autoridad: quién está detrás ─────────────────────────────────── -->
+    <section class="section authority">
+      <div class="authority__grid">
+        <div class="authority__photo" data-reveal>
+          <img :src="JUAN.seated" alt="Juan Román Garza sentado, cuerpo completo" loading="lazy" />
+        </div>
+        <div class="authority__copy" data-reveal>
+          <span class="eyebrow">Quién está detrás</span>
+          <h2>
+            ¿Por qué algunas personas logran cambiar, recuperarse y preservar su salud, mientras
+            otras continúan deteriorándose aun sabiendo que necesitan actuar?
+          </h2>
+          <p>
+            La respuesta no está solamente en la medicina. Está en la interacción entre conducta y
+            biología. En cómo interpretamos nuestra salud. En las decisiones que tomamos —o
+            postergamos— cada día.
+          </p>
+          <p>
+            Esta búsqueda me llevó a integrar psicología de la salud, medicina conductual,
+            biomarcadores, prevención, tecnología, inteligencia clínica y medicina regenerativa bajo
+            una misma filosofía.
+          </p>
+          <blockquote class="authority__quote">
+            Porque el futuro de tu salud no depende únicamente de lo que sabes. Depende de lo que
+            decides hacer con lo que sabes.
+          </blockquote>
+          <p class="authority__signature">— Juan Román Garza</p>
+        </div>
       </div>
     </section>
 
@@ -228,6 +282,20 @@ onUnmounted(() => {
       </div>
     </section>
 
+    <!-- ── Prueba social: del escenario a tu casa ───────────────────────── -->
+    <section class="proof">
+      <img :src="JUAN.auditorium" alt="Juan Román Garza presentando ante un auditorio lleno" class="proof__bg" loading="lazy" />
+      <div class="proof__veil"></div>
+      <div class="proof__inner" data-reveal>
+        <h2>Del escenario a tu casa.</h2>
+        <p>
+          El mismo marco que Juan Román Garza presenta ante empresas, hospitales y universidades,
+          ahora disponible como libros, cursos, evaluaciones y programas.
+        </p>
+        <RouterLink to="/tienda" class="btn btn--primary btn--lg">Ver todo el catálogo</RouterLink>
+      </div>
+    </section>
+
     <!-- ── 07. Cierre ───────────────────────────────────────────────────── -->
     <section class="cta-band">
       <div class="cta-band__inner" data-reveal>
@@ -254,15 +322,85 @@ onUnmounted(() => {
   background: $mesh-navy;
   overflow: hidden;
 
-  &__content {
+  &__grid {
     position: relative;
     z-index: 1;
     @include container;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: 2.4rem;
+    padding-block: 3rem;
+
+    @include lg {
+      flex-direction: row;
+      align-items: center;
+      gap: 3.5rem;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
     align-items: flex-start;
     gap: 1.4rem;
-    padding-block: 3rem;
+    width: 100%;
+
+    @include lg {
+      flex: 1 1 54%;
+    }
+  }
+
+  &__portrait {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 360px;
+
+    @include lg {
+      flex: 1 1 46%;
+      max-width: 420px;
+      align-self: stretch;
+      justify-content: center;
+    }
+  }
+
+  &__portrait-frame {
+    width: 100%;
+    border-radius: 26px;
+    border: 1px solid rgba($gold, 0.4);
+    box-shadow: $shadow-lg;
+    overflow: hidden;
+    background: $navy-800;
+
+    img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+  }
+
+  &__portrait-caption {
+    font-family: $font-accent;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: $white;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    span {
+      font-family: $font-secondary;
+      font-weight: 400;
+      font-size: 0.78rem;
+      letter-spacing: 0.03em;
+      color: $gold-soft;
+    }
   }
 
   &__eyebrow {
@@ -333,6 +471,179 @@ onUnmounted(() => {
   &__method-arrow {
     font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.35);
+  }
+}
+
+/* ── Barra de medios ──────────────────────────────────────────────────── */
+.press {
+  background: $navy;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  &__inner {
+    @include container;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.1rem;
+    padding-block: 1.8rem;
+
+    @include md {
+      flex-direction: row;
+      justify-content: center;
+      gap: 2.2rem;
+    }
+  }
+
+  &__label {
+    font-family: $font-accent;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+  }
+
+  &__logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+
+    img {
+      height: 24px;
+      max-width: 100%;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+      opacity: 0.5;
+      transition: opacity 0.2s ease;
+
+      &:hover { opacity: 1; }
+    }
+  }
+}
+
+/* ── Autoridad ────────────────────────────────────────────────────────── */
+.authority {
+  @include container;
+
+  &__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2.4rem;
+    align-items: center;
+
+    @include lg {
+      flex-direction: row;
+      align-items: center;
+      gap: 3.5rem;
+    }
+  }
+
+  &__photo {
+    width: 100%;
+    max-width: 380px;
+    flex-shrink: 0;
+
+    img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      border-radius: 26px;
+      box-shadow: $shadow-md;
+    }
+
+    @include lg {
+      flex: 1 1 40%;
+    }
+  }
+
+  &__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+
+    h2 {
+      font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+      line-height: 1.3;
+      color: $text;
+      max-width: 32ch;
+    }
+
+    p {
+      color: $text-secondary;
+      font-size: 1.02rem;
+      max-width: 62ch;
+    }
+
+    @include lg {
+      flex: 1 1 60%;
+    }
+  }
+
+  &__quote {
+    border-left: 3px solid $gold;
+    padding-left: 1.2rem;
+    margin: 0.4rem 0;
+    font-family: $font-accent;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: $text;
+    max-width: 52ch;
+  }
+
+  &__signature {
+    font-family: $font-accent;
+    font-weight: 600;
+    color: $text-secondary;
+  }
+}
+
+/* ── Prueba social ────────────────────────────────────────────────────── */
+.proof {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  min-height: 60vh;
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__veil {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, rgba(1, 13, 39, 0.94), rgba(1, 13, 39, 0.55));
+  }
+
+  &__inner {
+    position: relative;
+    z-index: 1;
+    @include container;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1.2rem;
+    padding-block: 4.5rem;
+
+    h2 {
+      color: $white;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      max-width: 20ch;
+    }
+
+    p {
+      color: $text-on-navy;
+      font-size: 1.05rem;
+      max-width: 56ch;
+    }
   }
 }
 
