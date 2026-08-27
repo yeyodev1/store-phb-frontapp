@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="PHB Regenerative Capacity">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14224A"/>
+      <stop offset=".55" stop-color="#0A1533"/>
+      <stop offset="1" stop-color="#010D27"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".78" cy=".12" r=".62">
+      <stop offset="0" stop-color="#21BCFB" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#21BCFB" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <rect width="800" height="600" fill="url(#glow)"/>
+  <rect x="18" y="18" width="764" height="564" fill="none" stroke="#C9A96A" stroke-opacity=".28"/>
+
+  <g transform="translate(672,132)" opacity=".9"><g stroke="#C9A96A" stroke-width="3" fill="none" stroke-linecap="round">
+      <path d="M-26 -32 q52 22 0 64"/>
+      <path d="M26 -32 q-52 22 0 64"/>
+      <path d="M-20 -14 h40 M-24 0 h48 M-20 14 h40" opacity=".55"/>
+    </g></g>
+
+  <text x="64" y="112" fill="#E4CE9E" font-family="system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
+        font-size="17" font-weight="600" letter-spacing="5.5">EVALUACIÓN PHB</text>
+
+  <g font-family="system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" font-weight="700" fill="#FFFFFF">
+    <text x="64" y="268.68" font-size="54" letter-spacing="-1">PHB Regenerative</text>
+    <text x="64" y="331.32" font-size="54" letter-spacing="-1">Capacity</text>
+  </g>
+
+  <line x1="64" y1="452" x2="188" y2="452" stroke="#C9A96A" stroke-width="3"/>
+
+  <text x="64" y="492" fill="#A9B6CC" font-family="system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
+        font-size="19">Evalúa antes de regenerar</text>
+
+  <text x="64" y="546" fill="#FFFFFF" fill-opacity=".72" font-family="system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
+        font-size="15" font-weight="600" letter-spacing="3.4">JUAN ROMÁN GARZA</text>
+  <text x="286" y="546" fill="#21BCFB" font-family="system-ui,-apple-system,'Segoe UI',Roboto,sans-serif"
+        font-size="15" font-weight="700" letter-spacing="3.4">× PHB</text>
+</svg>

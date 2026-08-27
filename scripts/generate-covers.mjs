@@ -130,6 +130,10 @@ const COVERS = [
   { slug: 'phb-health-intelligence', world: 'formate', eyebrow: 'Curso', title: 'PHB Health Intelligence', note: 'Perspectiva multisistémica' },
   { slug: 'phb-basic', world: 'evaluate', eyebrow: 'Evaluación PHB', title: 'PHB Basic', note: 'Tu primera fotografía de salud' },
   { slug: 'phb-biomarkers', world: 'evaluate', eyebrow: 'Evaluación PHB', title: 'PHB Biomarkers', note: 'Interpreta tus estudios' },
+  { slug: 'phb-multisystem', world: 'evaluate', eyebrow: 'Evaluación PHB', title: 'PHB Multisystem', note: 'Tu salud como sistema' },
+  { slug: 'phb-regenerative-capacity', world: 'regeneracion', eyebrow: 'Evaluación PHB', title: 'PHB Regenerative Capacity', note: 'Evalúa antes de regenerar' },
+  { slug: 'phb-longevity', world: 'evaluate', eyebrow: 'Evaluación PHB', title: 'PHB Longevity', note: 'Riesgo, prevención y longevidad' },
+  { slug: 'phb-precision', world: 'evaluate', eyebrow: 'Evaluación insignia', title: 'PHB Precision', note: 'La evaluación más completa' },
   { slug: 'phb-actua-30', world: 'actua', eyebrow: 'Programa · 30 días', title: 'PHB ACTÚA 30', note: 'De la conciencia a la acción' },
   { slug: 'programa-regenerativo-metabolico', world: 'regeneracion', eyebrow: 'Programa clínico', title: 'Programa Regenerativo Metabólico', note: 'Requiere evaluación previa' },
 ]
